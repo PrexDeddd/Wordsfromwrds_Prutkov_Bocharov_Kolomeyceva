@@ -1,6 +1,3 @@
-# Wordsfromwrds_Prutkov_Bocharov_Kolomeyceva
-Выполнили студенты группы ИСП-244: Прутков Иван, Бочаров Илья, Коломейцева Виолетта
-
 # Word-from-Word Level Generator
 
 A lightweight Java utility that generates game levels for "Word-from-Word" (anagram) puzzle games and exports them in JSON format.
