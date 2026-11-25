@@ -1,130 +1,130 @@
-import java.util.;
+import java.util.*;
 
-public class words {
+public class Main {
 
     public static void main(String[] args) {
-         ВХОДНЫЕ ДАННЫЕ (из задания)
-        ListString dictionary = Arrays.asList(десант, адрес, армия, место, метро, десна, адрес, среда);
-        ListString mainWords = Arrays.asList(ДЕМОНСТРАЦИЯ, ВЗАИМНОСТЬ, КОРОТКОЕ, СЛОВО);
+        // ВХОДНЫЕ ДАННЫЕ (из задания)
+        List<String> dictionary = Arrays.asList("десант", "адрес", "армия", "место", "метро", "десна", "адрес", "среда");
+        List<String> mainWords = Arrays.asList("ДЕМОНСТРАЦИЯ", "ВЗАИМНОСТЬ", "КОРОТКОЕ", "СЛОВО");
 
-          Конфиг
-        int minSubWordLength = 3; Минимальная длина слова
-        int minWordsToPass = 4; Минимальное количество слов для прохождения
-         Сложность
-        int easyMaxMainWordLength = 7; Меньше семи букв в главном слове--лёгкий уровень
-        int mediumMaxMainWordLength = 10; Средний
-        int easyMaxSubWords = 5; Максимум подслов для лёгкого
-        int mediumMaxSubWords = 10; Для среднего
+        // Конфиг
+        int minSubWordLength = 3; // Минимальная длина слова
+        int minWordsToPass = 4; // Минимальное количество слов для прохождения
+        // Сложность
+        int easyMaxMainWordLength = 7; // Меньше семи букв в главном слове -- лёгкий уровень
+        int mediumMaxMainWordLength = 10; // Средний
+        int easyMaxSubWords = 5; // Максимум подслов для лёгкого
+        int mediumMaxSubWords = 10; // Для среднего
 
-         Начинаем формировать JSON строку вручную
+        // Начинаем формировать JSON строку вручную
         StringBuilder json = new StringBuilder();
-        json.append({n  levels [n);
+        json.append("{\n  \"levels\": [\n");
 
         int levelId = 1;
-        boolean isFirstLevel = true;  Флаг для правильной расстановки запятых в JSON
+        boolean isFirstLevel = true; // Флаг для правильной расстановки запятых в JSON
 
-         ОСНОВНОЙ ЦИКЛ ПО ГЛАВНЫМ СЛОВАМ
-        for (String mainWord  mainWords) {
-             Переводим в верхний регистр
+        // ОСНОВНОЙ ЦИКЛ ПО ГЛАВНЫМ СЛОВАМ
+        for (String mainWord : mainWords) {
+            // Переводим в верхний регистр
             String upperMainWord = mainWord.toUpperCase();
 
-             Считаем буквы главного слова например, {'А' 1, 'Б' 2}
-            MapCharacter, Integer mainLetterCounts = new HashMap();
-            for (char c  upperMainWord.toCharArray()) {
+            // Считаем буквы главного слова: например, {'А': 1, 'Б': 2}
+            Map<Character, Integer> mainLetterCounts = new HashMap<>();
+            for (char c : upperMainWord.toCharArray()) {
                 mainLetterCounts.put(c, mainLetterCounts.getOrDefault(c, 0) + 1);
             }
 
-             Ищем подходящие подслова
-            ListString validSubWords = new ArrayList();
-            SetString uniqueSubWords = new HashSet();  Для защиты от дубликатов
+            // Ищем подходящие подслова
+            List<String> validSubWords = new ArrayList<>();
+            Set<String> uniqueSubWords = new HashSet<>(); // Для защиты от дубликатов
 
-             ЦИКЛ ПО СЛОВАРЮ
-            for (String dictWord  dictionary) {
+            // ЦИКЛ ПО СЛОВАРЮ
+            for (String dictWord : dictionary) {
                 String upperDictWord = dictWord.toUpperCase();
 
-                 Проверка длина = minSubWordLength
-                if (upperDictWord.length()  minSubWordLength) continue;
+                // Проверка: длина >= minSubWordLength
+                if (upperDictWord.length() < minSubWordLength) continue;
 
-                 Проверка не совпадает с главным
+                // Проверка: не совпадает с главным
                 if (upperDictWord.equals(upperMainWord)) continue;
 
-                 Проверка нет дубликатов
+                // Проверка: нет дубликатов
                 if (uniqueSubWords.contains(upperDictWord)) continue;
 
-                 Проверка можно ли собрать из букв главного слова
+                // Проверка: можно ли собрать из букв главного слова
                 if (canBuild(upperDictWord, mainLetterCounts)) {
                     validSubWords.add(upperDictWord);
                     uniqueSubWords.add(upperDictWord);
                 }
             }
 
-             ПРОВЕРКА ХВАТАЕТ ЛИ СЛОВ ДЛЯ ПРОХОЖДЕНИЯ
-             Если меньше, чем нужно для прохождения, пропускаем слово
-            if (validSubWords.size()  minWordsToPass) {
-                System.out.println(Пропущено слово  + upperMainWord +  (мало подслов));
+            // ПРОВЕРКА: ХВАТАЕТ ЛИ СЛОВ ДЛЯ ПРОХОЖДЕНИЯ?
+            // Если меньше, чем нужно для прохождения, пропускаем слово
+            if (validSubWords.size() < minWordsToPass) {
+                System.out.println("Пропущено слово: " + upperMainWord + " (мало подслов)");
                 continue;
             }
 
-             ОПРЕДЕЛЕНИЕ СЛОЖНОСТИ И ОГРАНИЧЕНИЕ КОЛИЧЕСТВА
-            String difficulty = HARD;
+            // ОПРЕДЕЛЕНИЕ СЛОЖНОСТИ И ОГРАНИЧЕНИЕ КОЛИЧЕСТВА
+            String difficulty = "HARD";
             int maxAllowed = Integer.MAX_VALUE;
 
-            if (upperMainWord.length() = easyMaxMainWordLength) {
-                difficulty = EASY;
+            if (upperMainWord.length() <= easyMaxMainWordLength) {
+                difficulty = "EASY";
                 maxAllowed = easyMaxSubWords;
-            } else if (upperMainWord.length() = mediumMaxMainWordLength) {
-                difficulty = MEDIUM;
+            } else if (upperMainWord.length() <= mediumMaxMainWordLength) {
+                difficulty = "MEDIUM";
                 maxAllowed = mediumMaxSubWords;
             }
 
-             Обрезаем список подслов, если их слишком много
-            if (validSubWords.size()  maxAllowed) {
+            // Обрезаем список подслов, если их слишком много
+            if (validSubWords.size() > maxAllowed) {
                 validSubWords = validSubWords.subList(0, maxAllowed);
             }
 
-             ЗАПИСЬ УРОВНЯ В JSON
+            // ЗАПИСЬ УРОВНЯ В JSON
             if (!isFirstLevel) {
-                json.append(,n);
+                json.append(",\n");
             }
             isFirstLevel = false;
 
-            json.append(    {n);
-            json.append(      id ).append(levelId++).append(,n);
-            json.append(      mainWord ).append(upperMainWord).append(,n);
-            json.append(      difficulty ).append(difficulty).append(,n);
-            json.append(      minWordsToPass ).append(Math.min(minWordsToPass, validSubWords.size())).append(,n);
-            json.append(      subWords [n);
-             Записываем подслова
-            for (int i = 0; i  validSubWords.size(); i++) {
-                json.append(        { text ).append(validSubWords.get(i)).append(, hint  });
-                if (i  validSubWords.size() - 1) {
-                    json.append(,);
+            json.append("    {\n");
+            json.append("      \"id\": ").append(levelId++).append(",\n");
+            json.append("      \"mainWord\": \"").append(upperMainWord).append("\",\n");
+            json.append("      \"difficulty\": \"").append(difficulty).append("\",\n");
+            json.append("      \"minWordsToPass\": ").append(Math.min(minWordsToPass, validSubWords.size())).append(",\n");
+            json.append("      \"subWords\": [\n");
+            // Записываем подслова
+            for (int i = 0; i < validSubWords.size(); i++) {
+                json.append("        { \"text\": \"").append(validSubWords.get(i)).append("\", \"hint\": \"\" }");
+                if (i < validSubWords.size() - 1) {
+                    json.append(",");
                 }
-                json.append(n);
+                json.append("\n");
             }
 
-            json.append(      ]n);
-            json.append(    });
+            json.append("      ]\n");
+            json.append("    }");
         }
 
-        json.append(n  ]n});
+        json.append("\n  ]\n}");
 
-         ВЫВОД РЕЗУЛЬТАТА
+        // ВЫВОД РЕЗУЛЬТАТА
         System.out.println(json.toString());
     }
 
-     ПРОСТАЯ ФУНКЦИЯ ПРОВЕРКИ БУКВ
-     Возвращает true, если из mainLetterCounts можно собрать слово
-    private static boolean canBuild(String word, MapCharacter, Integer mainLetterCounts) {
-         Делаем копию карты, чтобы не портить оригинал
-        MapCharacter, Integer temp = new HashMap(mainLetterCounts);
+    // ПРОСТАЯ ФУНКЦИЯ ПРОВЕРКИ БУКВ
+    // Возвращает true, если из mainLetterCounts можно собрать слово
+    private static boolean canBuild(String word, Map<Character, Integer> mainLetterCounts) {
+        // Делаем копию карты, чтобы не портить оригинал
+        Map<Character, Integer> temp = new HashMap<>(mainLetterCounts);
 
-        for (char c  word.toCharArray()) {
-             Если буквы нет или ее количество закончилось - нельзя собрать
-            if (!temp.containsKey(c)  temp.get(c) == 0) {
+        for (char c : word.toCharArray()) {
+            // Если буквы нет или ее количество закончилось - нельзя собрать
+            if (!temp.containsKey(c) || temp.get(c) == 0) {
                 return false;
             }
-             Забираем одну букву
+            // "Забираем" одну букву
             temp.put(c, temp.get(c) - 1);
         }
         return true;
